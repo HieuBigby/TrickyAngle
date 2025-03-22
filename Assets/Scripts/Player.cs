@@ -1,21 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private Vector3 _startCenterPos;
+    private GameObject _projectilePrefab;
 
     [SerializeField]
-    private float _rotateRadius, _rotateSpeed, _moveSpeed;
-
-    private Vector3 centerPos;
-
-    private bool canMove;
-    private bool canRotate;
-    private bool canShoot;
-
-    private float rotateAngle;
-    private Vector3 moveDirection;
+    private Transform _projectileSpawnPoint;
 
     [SerializeField]
     private GameObject _explosionPrefab;
@@ -23,75 +16,60 @@ public class Player : MonoBehaviour
     [SerializeField]
     private AudioClip _moveClip, _pointClip, _loseClip;
 
-    private void Awake()
+    private PlayerProjectile _currentProjectile;
+    private float _shootCooldown = 2f;
+    private float _timeSinceLastShot;
+    private float _spawnAngle = 0f;
+
+    private void Start()
     {
-        canRotate = true;
-        canShoot = true;
-        canMove = false;
-        centerPos = _startCenterPos;
-        rotateAngle = 0f;
+        SpawnProjectile();
     }
 
     private void Update()
     {
-        if(canShoot && Input.GetMouseButtonDown(0))
+        _timeSinceLastShot += Time.deltaTime;
+        Debug.Log("Time: " + _timeSinceLastShot);
+
+        if (_currentProjectile == null && _timeSinceLastShot >= _shootCooldown)
         {
-            Shoot();
+            Debug.Log("Spawn");
+            SpawnProjectile();
         }
     }
 
-    private void FixedUpdate()
+    private void SpawnProjectile()
     {
-        if(canRotate)
-        {
-            rotateAngle += _rotateSpeed * Time.fixedDeltaTime;
-            moveDirection = new Vector3(Mathf.Cos(rotateAngle * Mathf.Deg2Rad)
-                , Mathf.Sin(rotateAngle * Mathf.Deg2Rad), 0f).normalized;
-            transform.position = centerPos + _rotateRadius * moveDirection;
-            if (rotateAngle >= 360f) rotateAngle = 0f;
-        }
-        else if(canMove)
-        {
-            transform.position += _moveSpeed * Time.fixedDeltaTime * moveDirection;
-        }
+        GameObject projectileObject = Instantiate(_projectilePrefab, _projectileSpawnPoint.position, Quaternion.identity);
+        _currentProjectile = projectileObject.GetComponent<PlayerProjectile>();
+        _currentProjectile.Initialize(this, _spawnAngle);
+        _timeSinceLastShot = 0f;
+    }
+
+    public void OnProjectileShot()
+    {
+        _spawnAngle = _currentProjectile.RotateAngle;
+        _currentProjectile = null;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag(Constants.Tags.Obstacle))
+        if (collision.gameObject.CompareTag(Constants.Tags.Enemy))
         {
             EndGame();
-        }
-        if(collision.gameObject.CompareTag(Constants.Tags.SCORE))
-        {
-
-            AudioManager.Instance.PlaySound(_pointClip);
-            centerPos = collision.gameObject.transform.position;
-            canMove = false;
-            canRotate = true;
-            canShoot = true;
-            float tangent = (transform.position.y - centerPos.y) / (transform.position.x - centerPos.x);
-            rotateAngle = Mathf.Atan(tangent);
-            int id = collision.gameObject.GetComponent<Score>().Id;
-            GameManager.Instance.UpdateScore(id);
         }
     }
 
     private void EndGame()
     {
+        if(_currentProjectile)
+        {
+            Destroy(_currentProjectile.gameObject);
+        }
+
         AudioManager.Instance.PlaySound(_loseClip);
         Destroy(Instantiate(_explosionPrefab, transform.position, Quaternion.identity), 5f);
         GameManager.Instance.EndGame();
         Destroy(gameObject);
     }
-
-    private void Shoot()
-    {
-        AudioManager.Instance.PlaySound(_moveClip);
-        canRotate = false;
-        canShoot = false;
-        canMove = true;
-        moveDirection = (transform.position - centerPos).normalized;
-    }
-
 }

@@ -110,20 +110,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateScore(int current)
+    public void UpdateScore()
     {
         score++;
         _scoreText.text = score.ToString();
         _scoreAnimator.Play(_scoreClip.name, -1, 0f);
 
-
-        int temp = UnityEngine.Random.Range(0, _totalTargets);
-        while (temp == currentTargetIndex)
-        {
-            temp = UnityEngine.Random.Range(0, _totalTargets);
-        }
-        currentTargetIndex = temp;
-        currentMoveIndex = current;
         UpdateColor?.Invoke(currentTargetIndex);
         UpdateMoveColor?.Invoke(currentMoveIndex);
     }

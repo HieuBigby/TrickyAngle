@@ -12,5 +12,6 @@ namespace Constants
     {
         public const string SCORE = "Score";
         public const string Obstacle = "Obstacle";
+        public const string Enemy = "Enemy";
     }
 }
