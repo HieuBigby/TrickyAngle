@@ -29,11 +29,11 @@ public class Player : MonoBehaviour
     private void Update()
     {
         _timeSinceLastShot += Time.deltaTime;
-        Debug.Log("Time: " + _timeSinceLastShot);
+        //Debug.Log("Time: " + _timeSinceLastShot);
 
         if (_currentProjectile == null && _timeSinceLastShot >= _shootCooldown)
         {
-            Debug.Log("Spawn");
+            //Debug.Log("Spawn");
             SpawnProjectile();
         }
     }
