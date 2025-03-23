@@ -539,7 +539,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Angle Launch
+  m_text: Tricky Angle
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3076d99aefb0e324d837b3b255b32890, type: 2}
   m_sharedMaterial: {fileID: -1049568395778892645, guid: 3076d99aefb0e324d837b3b255b32890, type: 2}
