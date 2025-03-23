@@ -7,13 +7,14 @@ public class PlayerProjectile : MonoBehaviour
 
     [SerializeField]
     private float _rotateRadius, _rotateSpeed, _moveSpeed;
+    [SerializeField]
+    private ParticleSystem _trailParticle;
 
     private Vector3 centerPos;
 
     private bool canMove;
     private bool canRotate;
     private bool canShoot;
-    private bool shooting;
 
     private float rotateAngle;
     public float RotateAngle => rotateAngle;
@@ -37,6 +38,7 @@ public class PlayerProjectile : MonoBehaviour
         _startCenterPos = player.transform.position;
         centerPos = _startCenterPos;
         rotateAngle = angle;
+        Rotate();
     }
 
     private void Update()
@@ -51,11 +53,7 @@ public class PlayerProjectile : MonoBehaviour
     {
         if (canRotate)
         {
-            rotateAngle += _rotateSpeed * Time.fixedDeltaTime;
-            moveDirection = new Vector3(Mathf.Cos(rotateAngle * Mathf.Deg2Rad)
-                , Mathf.Sin(rotateAngle * Mathf.Deg2Rad), 0f).normalized;
-            transform.position = centerPos + _rotateRadius * moveDirection;
-            if (rotateAngle >= 360f) rotateAngle = 0f;
+            Rotate();
         }
         else if (canMove)
         {
@@ -63,11 +61,20 @@ public class PlayerProjectile : MonoBehaviour
         }
     }
 
+    void Rotate()
+    {
+        rotateAngle += _rotateSpeed * Time.fixedDeltaTime;
+        moveDirection = new Vector3(Mathf.Cos(rotateAngle * Mathf.Deg2Rad)
+            , Mathf.Sin(rotateAngle * Mathf.Deg2Rad), 0f).normalized;
+        transform.position = centerPos + _rotateRadius * moveDirection;
+        if (rotateAngle >= 360f) rotateAngle = 0f;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag(Constants.Tags.Obstacle))
         {
-            Destroy(gameObject);
+            Destroy(gameObject, 0.5f);
         }
 
         if (collision.gameObject.CompareTag(Constants.Tags.Enemy))
@@ -78,6 +85,7 @@ public class PlayerProjectile : MonoBehaviour
             // Destroy the enemy and spawn destruction particle
             Destroy(Instantiate(_explosionPrefab, collision.transform.position, Quaternion.identity), 5f);
             Destroy(collision.gameObject);
+            Destroy(gameObject);
         }
     }
 

@@ -4995,6 +4995,7 @@ MonoBehaviour:
   _rotateRadius: 2
   _rotateSpeed: 180
   _moveSpeed: 20
+  _trailParticle: {fileID: 7765628762581684478}
   _explosionPrefab: {fileID: 8669984415848715307, guid: 644d8774c5518d545ab2f8fb6df0ba32, type: 3}
   _moveClip: {fileID: 8300000, guid: 0d454d9251120214ebd15c36b1b78198, type: 3}
   _pointClip: {fileID: 8300000, guid: f3df8866c69411e4b995b9e592a6f70f, type: 3}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Enemy : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class Enemy : MonoBehaviour
     private float speed = 3f;
 
     private Transform playerTransform;
+
+    [HideInInspector]
+    public UnityEvent OnEnemyDestroyed;
 
     public void Initialize(Transform player)
     {
@@ -21,5 +25,10 @@ public class Enemy : MonoBehaviour
             Vector2 direction = (playerTransform.position - transform.position).normalized;
             transform.position += (Vector3)direction * speed * Time.deltaTime;
         }
+    }
+
+    private void OnDestroy()
+    {
+        OnEnemyDestroyed?.Invoke();
     }
 }

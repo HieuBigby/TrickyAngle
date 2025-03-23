@@ -44,9 +44,16 @@ public class EnemySpawner : MonoBehaviour
         GameObject enemyObject = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         Enemy enemy = enemyObject.GetComponent<Enemy>();
         enemy.Initialize(playerTransform);
+        enemy.OnEnemyDestroyed.RemoveListener(OnEnemyDestroyed);
+        enemy.OnEnemyDestroyed.AddListener(OnEnemyDestroyed);
 
         timeSinceLastSpawn = 0f;
         SetRandomSpawnInterval();
+    }
+
+    private void OnEnemyDestroyed()
+    {
+        timeSinceLastSpawn += Random.Range(minSpawnInterval, maxSpawnInterval) / 2;
     }
 
     private Vector2 GetRandomEdgePosition()
